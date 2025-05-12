@@ -1,0 +1,18 @@
+<?php
+// You must enable these 2 lines for PHP to accept raw JSON:
+$input = json_decode(file_get_contents("php://input"), true);
+$token = $input["credential"] ?? "";
+
+// Google's public key verification
+$payload = json_decode(file_get_contents("https://oauth2.googleapis.com/tokeninfo?id_token=" . $token), true);
+
+if ($payload && isset($payload['email'])) {
+    $name = htmlspecialchars($payload['name'] ?? "Unknown");
+    $email = htmlspecialchars($payload['email']);
+    echo "<h2>Welcome, $name</h2>";
+    echo "<p>Your email: $email</p>";
+    echo "<a href='logout.php'>Log out</a>";
+} else {
+    echo "Invalid ID token.";
+}
+?>
